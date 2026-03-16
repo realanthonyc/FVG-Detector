@@ -4,7 +4,7 @@
 //@version=6
 // -------------------------------------------------------------------
 //  FVG Detector
-//  v1.2.2
+//  v1.2.3
 // -------------------------------------------------------------------
 indicator(title="FVG Detector", shorttitle="FVG", overlay=true, max_bars_back=500, max_boxes_count=500, max_lines_count=500)
 
@@ -15,9 +15,31 @@ bearColor   = input.color(color.new(#ff60a0, 75), "Bearish FVG Color",   group=g
 showMidline = input.bool(true, "Show Middle Line", group=grp_display)
 grp_layout  = "Geometry & Filters"
 boxWidth    = input.int(1, "Box Width (Bars)", minval=1, step=1, group=grp_layout)
+keepRecent  = input.int(200, "Keep Recent FVGs", minval=1, maxval=500, step=1,
+              tooltip="Maximum total number of most recently detected FVG zones to keep on chart. Older zones are deleted to reduce script load.",
+              group=grp_layout)
 minGapPct   = input.float(45, "Min Gap Size (%)", minval=0, maxval=1000, step=5, 
               tooltip="Gap must be at least this % of displacement candle body. \nExamples: \n45 = 45% (recommended) \n10 = 10% (more gaps) \n0 = To show all gaps (no filter)", 
               group=grp_layout) / 100
+
+var box[] fvgBoxes = array.new_box()
+var line[] fvgMidlines = array.new_line()
+
+trimDrawings() =>
+    while array.size(fvgBoxes) > keepRecent
+        box.delete(array.shift(fvgBoxes))
+    while array.size(fvgMidlines) > keepRecent
+        line.delete(array.shift(fvgMidlines))
+
+drawFvg(bool isBull, float top, float bottom, float avg, int left, int right) =>
+    box zone = box.new(left, top, right, bottom, border_color=na, bgcolor=isBull ? bullColor : bearColor)
+    array.push(fvgBoxes, zone)
+    trimDrawings()
+
+    if showMidline
+        line mid = line.new(left, avg, right, avg, color=isBull ? bullColor : bearColor, width=3)
+        array.push(fvgMidlines, mid)
+        trimDrawings()
 
 // === Calculations ===
 bool isBullishFVG = low > high[2]
@@ -28,22 +50,20 @@ float bearGapSize = isBearishFVG ? (low[2] - high) : 0.0
 bool validBull = isBullishFVG and (minGapPct == 0 or (triggerBody > 0 ? bullGapSize >= triggerBody * minGapPct : true))
 bool validBear = isBearishFVG and (minGapPct == 0 or (triggerBody > 0 ? bearGapSize >= triggerBody * minGapPct : true))
 
+// Only create drawings on confirmed bars to avoid duplicate realtime objects.
+// Historical detection logic and the retained visual output stay the same.
 // === Plot ===
-if validBull
+if barstate.isconfirmed and validBull
     float top    = low
     float bottom = high[2]
     float avg    = math.avg(top, bottom)
     int   left   = bar_index - 1
     int   right  = left + boxWidth
-    box.new(left, top, right, bottom, border_color=na, bgcolor=bullColor)
-    if showMidline
-        line.new(left, avg, right, avg, color=bullColor, width=3)
-if validBear
+    drawFvg(true, top, bottom, avg, left, right)
+if barstate.isconfirmed and validBear
     float top    = low[2]
     float bottom = high
     float avg    = math.avg(top, bottom)
     int   left   = bar_index - 1
     int   right  = left + boxWidth
-    box.new(left, top, right, bottom, border_color=na, bgcolor=bearColor)
-    if showMidline
-        line.new(left, avg, right, avg, color=bearColor, width=3)
+    drawFvg(false, top, bottom, avg, left, right)
