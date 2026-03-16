@@ -4,6 +4,7 @@
 //@version=6
 // -------------------------------------------------------------------
 //  FVG Detector
+//  On GitHub: https://github.com/realanthonyc/FVG-Detector
 //  v1.2.3
 // -------------------------------------------------------------------
 indicator(title="FVG Detector", shorttitle="FVG", overlay=true, max_bars_back=500, max_boxes_count=500, max_lines_count=500)
