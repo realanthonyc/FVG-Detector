@@ -1,7 +1,5 @@
 # FVG Detector
 
-## What is this script about?
-
 The **FVG Detector** is a TradingView Pine Script indicator that automatically identifies and highlights **Fair Value Gaps (FVGs)**. These are key price imbalances widely used by Smart Money Concepts (SMC) traders.
 
 ## How it works
@@ -19,7 +17,7 @@ The script visually plots:
 - **Red Box:** Bearish FVG (sellers overpowered buyers).
 - **Middle Line:** Marks the 50% midpoint of the gap, known as **Consequent Encroachment (CE)**.
 
-*Colors, box width, and the number of historical FVGs kept on the chart are customizable.*
+Colors, box width, and the number of historical FVGs kept on the chart are customizable.
 
 ## Practical Usage & Trading Ideas
 

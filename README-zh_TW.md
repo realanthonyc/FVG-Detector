@@ -1,7 +1,5 @@
 # FVG Detector (公允價值缺口指標)
 
-## 關於此腳本
-
 **FVG Detector** 是一個 TradingView Pine Script 指標，能夠自動識別並標記**公允價值缺口 (Fair Value Gaps, FVGs)**。這是在 Smart Money Concepts (SMC) 中廣泛使用且極為關鍵的價格失衡區。
 
 ## 運作原理
@@ -19,7 +17,7 @@ FVG 是一個由 3 根 K 線 (蠟燭圖) 組成的形態，第 1 根和第 3 根
 - **紅色區塊：** 看跌 FVG (賣方力量壓倒買方)。
 - **水平中線：** 標示缺口的 50% 中點，在 SMC 術語中稱為**重疊確認 (Consequent Encroachment, CE)**。
 
-*區塊顏色、寬度以及保留在圖表上的歷史 FVG 數量都可以隨個人喜好自訂。*
+區塊顏色、寬度以及保留在圖表上的歷史 FVG 數量都可以自訂。
 
 ## 實用技巧與交易思維
 
